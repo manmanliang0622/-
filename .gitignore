@@ -1,0 +1,10 @@
+out/
+dist/
+packaging/
+tools/
+*.log
+*.pid
+*.txt
+example.pdf
+plan.pdf
+.claude/
