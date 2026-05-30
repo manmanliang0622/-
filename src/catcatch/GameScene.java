@@ -55,8 +55,6 @@ public class GameScene {
         ImageView targetIV = new ImageView();
         targetIV.setFitWidth(76); targetIV.setFitHeight(76);
         targetIV.setPreserveRatio(true);
-        Circle targetClip = new Circle(38, 38, 38);
-        targetIV.setClip(targetClip);
 
         // Coloured ring behind image
         Circle targetRing = new Circle(42);
@@ -325,9 +323,6 @@ public class GameScene {
             iv.setFitWidth(imgSize);
             iv.setFitHeight(imgSize);
             iv.setPreserveRatio(true);
-            // Circular clip
-            Circle clip = new Circle(imgSize / 2, imgSize / 2, imgSize / 2);
-            iv.setClip(clip);
             imgPane.getChildren().add(iv);
         } else {
             // Fallback: coloured circle + emoji
@@ -451,9 +446,13 @@ public class GameScene {
             String path = spec[1];
             File f = new File(path);
             if (!f.exists()) continue;
-            try {
-                WritableImage proc = ImageProcessor.loadAndProcess(f);
-                if (proc != null) processedCache.put(key, proc);
+            try (java.io.FileInputStream fis = new java.io.FileInputStream(f)) {
+                javafx.scene.image.Image raw = new javafx.scene.image.Image(fis);
+                if (!raw.isError()) {
+                    int w = (int) raw.getWidth(), h = (int) raw.getHeight();
+                    WritableImage wi = new WritableImage(raw.getPixelReader(), 0, 0, w, h);
+                    processedCache.put(key, wi);
+                }
             } catch (Exception ignored) {}
         }
     }
